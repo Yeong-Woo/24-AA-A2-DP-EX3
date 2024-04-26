@@ -1,16 +1,16 @@
 package observerPractice;
 
-public class WhetherDataSubject {
+import java.util.ArrayList;
+
+public class WeatherDataSubject implements Subject {
+	private ArrayList<Observer> observers;
+
 	private float temperature = 25.0f;
 	private float rainfall = 0.0f;
 
-	private UmbrellaStore umbSeller;
-	private ClothingStore clothingStore;
-
 	// default constructor
-	public WhetherDataSubject(UmbrellaStore us, ClothingStore cs) {
-		this.umbSeller = us;
-		this.clothingStore = cs;
+	public WeatherDataSubject() {
+		this.observers = new ArrayList<Observer>();
 	}
 
 	public void setMeasurements(float temperature, float rainfall) {
@@ -27,13 +27,33 @@ public class WhetherDataSubject {
 	}
 
 	public void notifyDataSetChanged() {
-		umbSeller.whetherChanged(rainfall);
-		clothingStore.whetherChanged(temperature);
+		notifyObservers();
 	}
 
 	public void currentState() {
 		System.out.printf(
 				"===== Current state ===== \n Temperature : %.1f'c \n Rainfall : %.1fmm \n=========================\n",
 				temperature, rainfall);
+	}
+
+	@Override
+	public void registerObserver(Observer o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		int index = observers.indexOf(o);
+		if (index >= 0) {
+			observers.remove(index);
+		}
+	}
+
+	@Override
+	public void notifyObservers() {
+		for (int i = 0; i < observers.size(); ++i) {
+			Observer observer = observers.get(i);
+			observer.update(this.temperature, this.rainfall);
+		}
 	}
 }
